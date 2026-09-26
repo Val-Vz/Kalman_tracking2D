@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-TOTAL_TIME = 10 * 60 
+TOTAL_TIME = 60 
 DT = 0.05          
 
 def turn_rate_from_g(n_g, v, g=9.81):
@@ -23,7 +23,7 @@ def _integrate_segment(state, dt, duration, a_tan=0.0, n_g=None, turn_sign=1.0, 
     If n_g is provided: coordinated turn targeting this load factor; the
     turn rate omega is recalculated at EACH step from the current speed
     (therefore remaining physically consistent even if a_tan changes v
-    during the turn). turn_sign = +1 (right turn) or -1 (left turn).
+    during the turn). turn_sign = +1 (left turn) or -1 (right turn).
     If n_g is None: straight flight (omega = 0).
     """
     n = max(int(round(duration / dt)), 1)
@@ -51,7 +51,7 @@ def _integrate_segment(state, dt, duration, a_tan=0.0, n_g=None, turn_sign=1.0, 
 
     return pos, vel, acc, [x, y, v, heading]
 
-def build_trajectory(segments, dt=DT, x0=0.0, y0=0.0, v0= 120.0 * 1852/3600, heading0 = 45 * np.pi / 180, g=9.81):
+def build_trajectory(segments, dt=DT, x0=0.0, y0=0.0, v0= 120.0 * 1852./3600, heading0 = 45 * np.pi / 180, g=9.81):
     """
     Builds a trajectory by chaining a list of segments (dicts).
     Each segment: {'duration': ..., 'a_tan': ..., 'n_g': ..., 'turn_sign': ...}
@@ -82,7 +82,7 @@ def aircraft_1(dt=DT):
     Straight-line motion at constant speed (zero acceleration).
     """
     segments = [
-        dict(duration=TOTAL_TIME),   # rien ne change : a_tan=0, pas de virage
+        dict(duration=TOTAL_TIME), 
     ]
     return build_trajectory(segments, dt=dt)
 
@@ -92,11 +92,11 @@ def aircraft_2(dt=DT):
     One gentle turn (~1.15g), separated by straight-line segments. Accelerating in straight line, then decelerating in straight line.
     """
     segments = [
-        dict(duration=120., a_tan=0.10),                  # accelerating straight line
-        dict(duration=360.0, n_g=1.15, turn_sign=+1),    # gentle right turn
-        dict(duration=120., a_tan=-0.10),                 # decelerating straight line
+        dict(duration=10., a_tan=0.10),                  # accelerating straight line
+        dict(duration=50, n_g=1.15, turn_sign=+1),       # gentle left turn
+        dict(duration=10., a_tan=-0.10),                 # decelerating straight line
     ]
-    return build_trajectory(segments, dt=dt, v0=120.0)
+    return build_trajectory(segments, dt=dt, v0=300 * 1852./3600)
 
 #Fighter aircraft
 def aircraft_3(dt=DT):
@@ -104,37 +104,15 @@ def aircraft_3(dt=DT):
     more abrupt and unpredictable maneuvers
     """
     segments = [
-        dict(duration=60.0),                              # straight flight
+        dict(duration=10.0, a_tan=+1.5),                           # strong acceleration
+        dict(duration=10.0, n_g=6.0, turn_sign=+1),              # high-G left turn
+        dict(duration=15.0, n_g=6.0, a_tan=+1, turn_sign=-1),    # high-G right turn and strong acceleration
+        dict(duration=10.0, a_tan=-1),                           # strong deceleration 
+        dict(duration=15.0, n_g=9.0, a_tan=-1.5, turn_sign=+1),    # high-G left turn and strong deceleration
+                           
 
-        dict(duration=30.0, a_tan=0.15),                 # strong acceleration
-
-        dict(duration=45.0, n_g=3.0, turn_sign=+1),      # high-G right turn
-        dict(duration=30.0, n_g=4.0, turn_sign=+1),      # stronger right turn
-
-        dict(duration=30.0, a_tan=-0.10),                # deceleration
-        dict(duration=45.0, n_g=5.0, turn_sign=-1),      # high-G left turn
-
-        dict(duration=30.0, a_tan=0.20),                 # strong acceleration
-
-        dict(duration=40.0, n_g=6.0, turn_sign=+1),      # very high-G right turn
-
-        dict(duration=30.0, a_tan=-0.15),                # strong deceleration
-
-        dict(duration=40.0, n_g=5.0, turn_sign=-1),      # high-G left turn
-
-        dict(duration=30.0, a_tan=0.20),                 # strong acceleration
-
-        dict(duration=40.0, n_g=6.0, turn_sign=+1),      # very high-G right turn
-
-        dict(duration=30.0, n_g=4.0, turn_sign=-1),      # high-G left turn
-
-        dict(duration=60.0),                              # straight flight
-
-        dict(duration=30.0, a_tan=-0.10),                # deceleration
-
-        dict(duration=30.0),                              # straight flight
     ]
-    return build_trajectory(segments, dt=dt)
+    return build_trajectory(segments, dt=dt, v0= 450 * 1852./3600, heading0= 45 * np.pi / 180)
 
 
 
