@@ -16,6 +16,7 @@ venv/
 *.png
 *.jpg
 *.jpeg
+*.gif
 
 # OS
 .DS_Store
