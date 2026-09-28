@@ -89,5 +89,7 @@ if __name__ == "__main__":
     ax_radar2.grid(True)
     ax_radar2.legend()
 
+
+    #plt.savefig("figures/noisy_measurements.png", dpi=300, bbox_inches="tight")
     plt.tight_layout()
     plt.show()
