@@ -24,7 +24,7 @@ def _aircraft_shape(x, y, heading, size):
     rot = np.array([[c, -s], [s, c]])
     return pts @ rot.T + [x, y]
 
-def make_animation(save_path="trajectories_animation.gif"):
+def make_animation(save_path="figures/trajectories_animation.gif"):
     titles = ["Light Aircraft", "Commercial Aircraft", "Fighter Jet"]
     data = [aircraft_1(), aircraft_2(), aircraft_3()]   # (t, pos, vel, acc)
 
